@@ -4,40 +4,52 @@
   <img src="assets/hero-claro.svg" alt="Cerrador de WhatsApp">
 </picture>
 
-# Cerrador de WhatsApp
+# Cerrador de WhatsApp · Closer Agent con Google Gemini
 
-Alguien te escribe a las once de la noche preguntando cuánto sale. Le contestás a las nueve de
-la mañana y ya compró en otro lado. O le contestás bien, cerrás la reunión, y tres días después
-nadie sabe en qué quedaron: no hay etapa, no hay resumen, no hay próximo paso escrito en ningún
-lado. Cuando el volumen sube, las dos cosas pasan el mismo día.
+Agente inteligente calificador y cerrador de ventas (Setter & Closer) para WhatsApp, impulsado por **Google Gemini** (`gemini-3.8-flash`) y estructurado con el protocolo cognitivo de 6 pasos.
 
-Este kit construye el agente que atiende esos chats: califica, contesta la objeción con tu
-playbook, ofrece horarios que existen de verdad, agenda, y deja la etapa y el próximo paso
-escritos en el CRM.
+- **Mentora Oficial / Contacto**: María de Jesús Vera
+- **Teléfono Oficial & Pruebas**: `+52 244 123 5715` ([https://wa.me/522441235715](https://wa.me/522441235715))
+- **Industria**: Red de Asociados / Consultores Independientes en bienestar digital y biotecnología celular (45+ años de ciencia médica y patentes internacionales, logística automatizada y cero cobranza o bodegas).
+- **Repositorio**: `https://github.com/moctezumagit/cerradordewhatsApp.git`
 
-## Esto no es una aplicación
+---
 
-**Adentro no hay código que corras.** No hay `agente/`, no hay servidor, no hay `pip install`
-que te deje algo andando. Comprobalo:
+## 🔒 Seguridad Absoluta de la Google Gemini API Key
 
-```console
-$ ls agente
-ls: agente: No such file or directory
-```
+Para garantizar que tu clave de Google Gemini (`GEMINI_API_KEY`) nunca se filtre ni quede vulnerable:
 
-Lo que se envía son instrucciones, contratos, pruebas y una compuerta. Se clona, se abre Claude
-Code adentro de la carpeta, y se corre `/start`. Claude lee el blueprint fase por fase y
-**escribe el código en tu máquina**, contra tus versiones y tu sistema operativo.
+1. **Aislamiento en `.gitignore`**:
+   - `.env` y `.env.*` están estrictamente ignorados y bloqueados por git. Ningún archivo con secretos se sube al repositorio.
+   - Las bases de datos locales (`leads.db`, `*.db`) también están excluidas para resguardar la privacidad de los contactos.
+2. **Arquitectura Backend Segura**:
+   - El código en `agente/gemini_service.py` **NUNCA** escribe ni expone tu clave. Solo la lee en memoria mediante variables de entorno del sistema (`os.getenv("GEMINI_API_KEY")`).
+   - El cliente web / panel interactivo (`panel/index.html`) no almacena ni expone llaves en peticiones públicas ni en el navegador. Todas las peticiones pasan de forma privada por el servidor backend FastAPI (`/api/chat`).
+3. **Despliegue Seguro (Docker, Railway, Cloud Run, Render)**:
+   - El `Dockerfile` incluye la directiva `RUN rm -f .env .env.*` para que ninguna credencial local termine en las capas del contenedor.
+   - En plataformas cloud, la `GEMINI_API_KEY` se configura exclusivamente en la pestaña **Environment Variables** del hosting, manteniéndola 100% aislada del código fuente.
 
-La razón es de ingeniería y no de estilo: un `pip install` a veces no anda, y no anda distinto
-en cada computadora. Un blueprint que dice qué hacer, qué tenés que ver en pantalla, y qué
-hacer cuando eso no aparece, sobrevive a esa diferencia. Un tarball de código, no.
+---
 
+## 🚀 Inicio Rápido y Ejecución Local
+
+### 1. Requisitos
+- Python 3.11 o 3.12
+- Google Gemini API Key (obtenida en [Google AI Studio](https://aistudio.google.com))
+
+### 2. Configurar Entorno
 ```bash
-git clone https://github.com/Hainrixz/whatsapp-closer-agentkit
-cd whatsapp-closer-agentkit
-claude          # y adentro:  /start
+cp env.example .env
+# Edita .env y agrega tu GEMINI_API_KEY
 ```
+
+### 3. Iniciar el Servidor y Panel
+```bash
+uvicorn agente.servidor:app --reload --port 8000
+```
+- **Panel Web y Simulador en Vivo**: Abre en tu navegador [http://127.0.0.1:8000/panel](http://127.0.0.1:8000/panel)
+- **Estado de Salud**: [http://127.0.0.1:8000/salud](http://127.0.0.1:8000/salud)
+
 
 **Se clona, no se instala con `/plugin install`.** `.claude-plugin/plugin.json` existe para que
 el marketplace pueda listarlo, y declara cero componentes a propósito: los once comandos leen

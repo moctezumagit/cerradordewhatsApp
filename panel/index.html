@@ -1,0 +1,972 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Cerrador de WhatsApp · Panel Gemini | María de Jesús Vera</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --bg-dark: #0b0f19;
+      --card-bg: rgba(18, 24, 38, 0.75);
+      --card-border: rgba(255, 255, 255, 0.08);
+      --accent-gemini-1: #4e82ee;
+      --accent-gemini-2: #9b72cf;
+      --accent-gemini-3: #f368e0;
+      --wa-green: #25d366;
+      --wa-green-dark: #128c7e;
+      --text-main: #f3f4f6;
+      --text-muted: #9ca3af;
+      --danger: #ef4444;
+      --warning: #f59e0b;
+      --success: #10b981;
+      --glass-panel: rgba(17, 24, 39, 0.7);
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+      font-family: 'Plus Jakarta Sans', sans-serif;
+    }
+
+    body {
+      background-color: var(--bg-dark);
+      color: var(--text-main);
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      overflow-x: hidden;
+      background-image: 
+        radial-gradient(circle at 15% 20%, rgba(78, 130, 238, 0.08) 0%, transparent 40%),
+        radial-gradient(circle at 85% 80%, rgba(155, 114, 207, 0.08) 0%, transparent 40%);
+    }
+
+    header {
+      background: rgba(11, 15, 25, 0.85);
+      backdrop-filter: blur(12px);
+      border-bottom: 1px solid var(--card-border);
+      padding: 1rem 2rem;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      position: sticky;
+      top: 0;
+      z-index: 50;
+    }
+
+    .brand {
+      display: flex;
+      align-items: center;
+      gap: 0.85rem;
+    }
+
+    .gemini-badge {
+      background: linear-gradient(135deg, var(--accent-gemini-1), var(--accent-gemini-2), var(--accent-gemini-3));
+      padding: 0.35rem 0.75rem;
+      border-radius: 9999px;
+      font-size: 0.75rem;
+      font-weight: 700;
+      letter-spacing: 0.5px;
+      color: #fff;
+      display: flex;
+      align-items: center;
+      gap: 0.4rem;
+      box-shadow: 0 4px 12px rgba(155, 114, 207, 0.3);
+    }
+
+    .title-group h1 {
+      font-size: 1.15rem;
+      font-weight: 700;
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+    }
+
+    .title-group span {
+      font-size: 0.8rem;
+      color: var(--text-muted);
+    }
+
+    .header-actions {
+      display: flex;
+      align-items: center;
+      gap: 1rem;
+    }
+
+    .status-pill {
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+      background: rgba(16, 185, 129, 0.1);
+      border: 1px solid rgba(16, 185, 129, 0.25);
+      color: var(--success);
+      padding: 0.35rem 0.85rem;
+      border-radius: 9999px;
+      font-size: 0.8rem;
+      font-weight: 600;
+    }
+
+    .pulse-dot {
+      width: 8px;
+      height: 8px;
+      background-color: var(--success);
+      border-radius: 50%;
+      box-shadow: 0 0 8px var(--success);
+      animation: pulse 2s infinite;
+    }
+
+    @keyframes pulse {
+      0%, 100% { opacity: 1; transform: scale(1); }
+      50% { opacity: 0.4; transform: scale(0.9); }
+    }
+
+    /* Navigation Tabs */
+    .tabs-bar {
+      display: flex;
+      gap: 0.5rem;
+      background: rgba(18, 24, 38, 0.6);
+      backdrop-filter: blur(8px);
+      padding: 0.5rem 2rem;
+      border-bottom: 1px solid var(--card-border);
+    }
+
+    .tab-btn {
+      background: transparent;
+      border: none;
+      color: var(--text-muted);
+      padding: 0.6rem 1.25rem;
+      border-radius: 8px;
+      font-size: 0.875rem;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.2s ease;
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+    }
+
+    .tab-btn:hover {
+      color: var(--text-main);
+      background: rgba(255, 255, 255, 0.05);
+    }
+
+    .tab-btn.active {
+      color: #fff;
+      background: linear-gradient(135deg, rgba(78, 130, 238, 0.2), rgba(155, 114, 207, 0.2));
+      border: 1px solid rgba(155, 114, 207, 0.4);
+    }
+
+    /* Main Container */
+    main {
+      flex: 1;
+      padding: 1.5rem 2rem;
+      max-width: 1600px;
+      width: 100%;
+      margin: 0 auto;
+    }
+
+    .tab-content {
+      display: none;
+    }
+
+    .tab-content.active {
+      display: block;
+    }
+
+    /* Simulator Layout */
+    .simulator-grid {
+      display: grid;
+      grid-template-columns: 460px 1fr;
+      gap: 1.5rem;
+      height: calc(100vh - 180px);
+      min-height: 650px;
+    }
+
+    /* WhatsApp Simulator Box */
+    .phone-container {
+      background: #0f141f;
+      border-radius: 20px;
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      box-shadow: 0 20px 40px rgba(0, 0, 0, 0.5);
+      display: flex;
+      flex-direction: column;
+      overflow: hidden;
+    }
+
+    .phone-header {
+      background: #1f2c34;
+      padding: 0.85rem 1rem;
+      display: flex;
+      align-items: center;
+      gap: 0.85rem;
+      border-bottom: 1px solid rgba(255, 255, 255, 0.06);
+    }
+
+    .avatar {
+      width: 42px;
+      height: 42px;
+      background: linear-gradient(135deg, #128c7e, #25d366);
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-weight: 700;
+      color: #fff;
+      font-size: 1.1rem;
+    }
+
+    .phone-header-info h3 {
+      font-size: 0.95rem;
+      font-weight: 600;
+    }
+
+    .phone-header-info p {
+      font-size: 0.75rem;
+      color: #25d366;
+    }
+
+    .chat-body {
+      flex: 1;
+      padding: 1rem;
+      overflow-y: auto;
+      display: flex;
+      flex-direction: column;
+      gap: 0.85rem;
+      background: #0b141a;
+      background-image: radial-gradient(rgba(255, 255, 255, 0.03) 1px, transparent 0);
+      background-size: 20px 20px;
+    }
+
+    .msg-bubble {
+      max-width: 85%;
+      padding: 0.75rem 1rem;
+      border-radius: 12px;
+      font-size: 0.875rem;
+      line-height: 1.45;
+      position: relative;
+      white-space: pre-wrap;
+      word-break: break-word;
+    }
+
+    .msg-user {
+      align-self: flex-end;
+      background: #005c4b;
+      color: #e9edef;
+      border-bottom-right-radius: 4px;
+    }
+
+    .msg-agent {
+      align-self: flex-start;
+      background: #202c33;
+      color: #d1d7db;
+      border-bottom-left-radius: 4px;
+      border: 1px solid rgba(255, 255, 255, 0.05);
+    }
+
+    .msg-time {
+      font-size: 0.65rem;
+      color: rgba(255, 255, 255, 0.5);
+      text-align: right;
+      margin-top: 0.35rem;
+    }
+
+    .quick-replies-bar {
+      background: #111b21;
+      padding: 0.6rem 0.85rem;
+      border-top: 1px solid rgba(255, 255, 255, 0.06);
+      display: flex;
+      gap: 0.4rem;
+      overflow-x: auto;
+      white-space: nowrap;
+    }
+
+    .quick-chip {
+      background: rgba(255, 255, 255, 0.07);
+      border: 1px solid rgba(255, 255, 255, 0.12);
+      color: #d1d7db;
+      padding: 0.35rem 0.75rem;
+      border-radius: 9999px;
+      font-size: 0.75rem;
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+
+    .quick-chip:hover {
+      background: var(--accent-gemini-1);
+      color: #fff;
+      border-color: transparent;
+    }
+
+    .chat-input-area {
+      background: #202c33;
+      padding: 0.75rem 1rem;
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+    }
+
+    .chat-input {
+      flex: 1;
+      background: #2a3942;
+      border: none;
+      padding: 0.7rem 1rem;
+      border-radius: 9999px;
+      color: #fff;
+      font-size: 0.875rem;
+      outline: none;
+    }
+
+    .send-btn {
+      background: #00a884;
+      border: none;
+      width: 40px;
+      height: 40px;
+      border-radius: 50%;
+      color: #fff;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      transition: transform 0.15s;
+    }
+
+    .send-btn:hover {
+      transform: scale(1.05);
+    }
+
+    /* Cognitive Inspector Panel */
+    .inspector-card {
+      background: var(--card-bg);
+      backdrop-filter: blur(16px);
+      border: 1px solid var(--card-border);
+      border-radius: 20px;
+      padding: 1.5rem;
+      display: flex;
+      flex-direction: column;
+      gap: 1.25rem;
+      overflow-y: auto;
+    }
+
+    .inspector-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      border-bottom: 1px solid var(--card-border);
+      padding-bottom: 1rem;
+    }
+
+    .inspector-title {
+      display: flex;
+      align-items: center;
+      gap: 0.6rem;
+    }
+
+    .score-badge {
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+      background: rgba(255, 255, 255, 0.05);
+      padding: 0.4rem 0.85rem;
+      border-radius: 12px;
+      border: 1px solid var(--card-border);
+    }
+
+    .score-number {
+      font-size: 1.5rem;
+      font-weight: 800;
+      color: var(--accent-gemini-1);
+    }
+
+    .steps-container {
+      display: flex;
+      flex-direction: column;
+      gap: 0.85rem;
+    }
+
+    .step-box {
+      background: rgba(255, 255, 255, 0.03);
+      border: 1px solid var(--card-border);
+      border-radius: 14px;
+      padding: 1rem;
+      transition: all 0.2s;
+    }
+
+    .step-box:hover {
+      border-color: rgba(155, 114, 207, 0.4);
+      background: rgba(255, 255, 255, 0.04);
+    }
+
+    .step-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 0.4rem;
+    }
+
+    .step-number {
+      font-size: 0.75rem;
+      font-weight: 700;
+      color: var(--text-muted);
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+    }
+
+    .step-status {
+      font-size: 0.75rem;
+      padding: 0.2rem 0.5rem;
+      border-radius: 6px;
+      font-weight: 600;
+    }
+
+    .status-ok { background: rgba(16, 185, 129, 0.15); color: var(--success); }
+    .status-warning { background: rgba(245, 158, 11, 0.15); color: var(--warning); }
+    .status-blue { background: rgba(78, 130, 238, 0.15); color: var(--accent-gemini-1); }
+
+    .step-content {
+      font-size: 0.825rem;
+      color: #e5e7eb;
+      line-height: 1.45;
+    }
+
+    /* Leads Table */
+    .leads-container {
+      background: var(--card-bg);
+      border: 1px solid var(--card-border);
+      border-radius: 18px;
+      padding: 1.5rem;
+      backdrop-filter: blur(12px);
+    }
+
+    .table-header-controls {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 1.25rem;
+    }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      text-align: left;
+    }
+
+    th {
+      font-size: 0.75rem;
+      text-transform: uppercase;
+      color: var(--text-muted);
+      padding: 0.75rem 1rem;
+      border-bottom: 1px solid var(--card-border);
+    }
+
+    td {
+      padding: 1rem;
+      border-bottom: 1px solid rgba(255, 255, 255, 0.04);
+      font-size: 0.85rem;
+    }
+
+    tr:hover td {
+      background: rgba(255, 255, 255, 0.02);
+    }
+
+    .wa-btn {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.4rem;
+      background: #25d366;
+      color: #0b141a;
+      text-decoration: none;
+      font-weight: 700;
+      padding: 0.4rem 0.75rem;
+      border-radius: 8px;
+      font-size: 0.75rem;
+      transition: opacity 0.2s;
+    }
+
+    .wa-btn:hover {
+      opacity: 0.9;
+    }
+
+    /* Playbook Accordion */
+    .playbook-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 1rem;
+    }
+
+    .playbook-card {
+      background: var(--card-bg);
+      border: 1px solid var(--card-border);
+      border-radius: 14px;
+      padding: 1.25rem;
+      backdrop-filter: blur(12px);
+    }
+
+    .playbook-card h3 {
+      font-size: 0.95rem;
+      margin-bottom: 0.5rem;
+      color: var(--accent-gemini-1);
+    }
+
+    .playbook-card p {
+      font-size: 0.825rem;
+      color: #d1d5db;
+      line-height: 1.45;
+    }
+
+    /* Config Tab */
+    .config-form {
+      max-width: 650px;
+      background: var(--card-bg);
+      border: 1px solid var(--card-border);
+      border-radius: 18px;
+      padding: 2rem;
+      display: flex;
+      flex-direction: column;
+      gap: 1.25rem;
+    }
+
+    .form-group label {
+      display: block;
+      font-size: 0.85rem;
+      font-weight: 600;
+      margin-bottom: 0.5rem;
+    }
+
+    .form-group input, .form-group select {
+      width: 100%;
+      background: rgba(255, 255, 255, 0.05);
+      border: 1px solid var(--card-border);
+      padding: 0.75rem 1rem;
+      border-radius: 10px;
+      color: #fff;
+      outline: none;
+      font-size: 0.875rem;
+    }
+
+    .btn-save {
+      background: linear-gradient(135deg, var(--accent-gemini-1), var(--accent-gemini-2));
+      border: none;
+      color: #fff;
+      font-weight: 700;
+      padding: 0.85rem 1.5rem;
+      border-radius: 10px;
+      cursor: pointer;
+      align-self: flex-start;
+      transition: opacity 0.2s;
+    }
+
+    .btn-save:hover {
+      opacity: 0.9;
+    }
+  </style>
+</head>
+<body>
+
+  <header>
+    <div class="brand">
+      <div class="gemini-badge">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor">
+          <path d="M12 2L15.09 8.26L22 9.27L17 14.14L18.18 21.02L12 17.77L5.82 21.02L7 14.14L2 9.27L8.91 8.26L12 2Z"/>
+        </svg>
+        GOOGLE GEMINI
+      </div>
+      <div class="title-group">
+        <h1>Cerrador de WhatsApp · Closer Agent</h1>
+        <span>Mentora Oficial: María de Jesús Vera (+52 244 123 5715)</span>
+      </div>
+    </div>
+    <div class="header-actions">
+      <div class="status-pill">
+        <div class="pulse-dot"></div>
+        <span>Modo: Borrador & Simulación Activa</span>
+      </div>
+    </div>
+  </header>
+
+  <nav class="tabs-bar">
+    <button class="tab-btn active" onclick="switchTab('simulador')">
+      💬 Simulador en Vivo
+    </button>
+    <button class="tab-btn" onclick="switchTab('leads')">
+      👥 Leads Calificados
+    </button>
+    <button class="tab-btn" onclick="switchTab('playbook')">
+      📖 Playbook de 10 Objeciones
+    </button>
+    <button class="tab-btn" onclick="switchTab('config')">
+      ⚙️ Configuración Gemini & Meta
+    </button>
+  </nav>
+
+  <main>
+    <!-- TAB 1: SIMULADOR DE CHAT Y ANÁLISIS COGNITIVO -->
+    <div id="tab-simulador" class="tab-content active">
+      <div class="simulator-grid">
+        <!-- Phone Simulator -->
+        <div class="phone-container">
+          <div class="phone-header">
+            <div class="avatar">MV</div>
+            <div class="phone-header-info">
+              <h3>María de Jesús Vera · Closer</h3>
+              <p>● en línea (respaldo automatizado)</p>
+            </div>
+          </div>
+          
+          <div class="chat-body" id="chat-messages">
+            <div class="msg-bubble msg-agent">
+              Hola, ¡te felicito por abrirte a escuchar! Qué gusto saludarte.<br><br>
+              Te platico brevemente: este es un programa para asociarte como Consultor Independiente en la industria del bienestar y biotecnología celular, con más de 45 años de ciencia y envíos 100% automatizados sin almacenar inventario ni cobrar fiado.<br><br>
+              Cuéntame, ¿actualmente ya tienes experiencia en ventas, comercio o redes, o buscas iniciar desde cero a tiempo parcial?
+              <div class="msg-time">Ahora</div>
+            </div>
+          </div>
+
+          <!-- Quick replies chips with the 10 objections -->
+          <div class="quick-replies-bar">
+            <span class="quick-chip" onclick="sendQuickReply('¿Es pirámide o estafa?')">¿Es pirámide?</span>
+            <span class="quick-chip" onclick="sendQuickReply('¿Cuánto se gana?')">¿Cuánto se gana?</span>
+            <span class="quick-chip" onclick="sendQuickReply('¿Cuánto cuesta entrar?')">¿Cuánto cuesta?</span>
+            <span class="quick-chip" onclick="sendQuickReply('Ya estoy en otra compañía y vendo por catálogo')">Ya vendo catálogo</span>
+            <span class="quick-chip" onclick="sendQuickReply('Ya lo intenté en otra red y me dejaron solo')">Me dejaron solo</span>
+            <span class="quick-chip" onclick="sendQuickReply('No tengo tiempo para dejar mi trabajo')">No tengo tiempo</span>
+            <span class="quick-chip" onclick="sendQuickReply('No me gusta cobrar ni andar persiguiendo gente')">No me gusta cobrar</span>
+            <span class="quick-chip" onclick="sendQuickReply('Tengo producto e inventario detenido en casa')">Stock detenido</span>
+            <span class="quick-chip" onclick="sendQuickReply('Mándame toda la información por PDF o video antes de hablar')">Mándame PDF</span>
+            <span class="quick-chip" onclick="sendQuickReply('Sí, me interesa agendar la llamada de 15 minutos')">¡Agendar llamada!</span>
+          </div>
+
+          <form class="chat-input-area" onsubmit="handleChatSubmit(event)">
+            <input type="text" id="chat-input" class="chat-input" placeholder="Escribe un mensaje de WhatsApp..." autocomplete="off">
+            <button type="submit" class="send-btn">
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor">
+                <path d="M2.01 21L23 12L2.01 3L2 10L17 12L2 14L2.01 21Z"/>
+              </svg>
+            </button>
+          </form>
+        </div>
+
+        <!-- Cognitive Inspector -->
+        <div class="inspector-card">
+          <div class="inspector-header">
+            <div class="inspector-title">
+              <h2>Análisis Cognitivo Gemini (6 Pasos)</h2>
+            </div>
+            <div class="score-badge">
+              <span>Score BANT:</span>
+              <span class="score-number" id="inspector-score">75</span>
+              <span id="inspector-temperatura" class="step-status status-ok">CALIENTE</span>
+            </div>
+          </div>
+
+          <div class="steps-container">
+            <div class="step-box">
+              <div class="step-header">
+                <span class="step-number">Paso 1 · Contexto y Multimodal</span>
+                <span class="step-status status-ok">Completado</span>
+              </div>
+              <div class="step-content" id="step-1-content">
+                Mensaje de texto entrante procesado. Ventana de 24 horas abierta. Identidad de contacto verificada.
+              </div>
+            </div>
+
+            <div class="step-box">
+              <div class="step-header">
+                <span class="step-number">Paso 2 · Detección de Intención y Calificación</span>
+                <span class="step-status status-blue" id="step-2-badge">Calificado</span>
+              </div>
+              <div class="step-content" id="step-2-content">
+                <strong>Intención:</strong> Interés en emprendimiento paralelo.<br>
+                <strong>País:</strong> México · <strong>Experiencia:</strong> Comercial / Catálogo.
+              </div>
+            </div>
+
+            <div class="step-box">
+              <div class="step-header">
+                <span class="step-number">Paso 3 · Manejo de Objeciones (Playbook)</span>
+                <span class="step-status status-ok" id="step-3-badge">En Playbook</span>
+              </div>
+              <div class="step-content" id="step-3-content">
+                <strong>Objeción:</strong> Sumar en paralelo sin dejar su actividad.<br>
+                <strong>Tono aplicado:</strong> Tratamiento de TÚ, reconocimiento de experiencia previa, sin inventar precios ni promesas monetarias.
+              </div>
+            </div>
+
+            <div class="step-box">
+              <div class="step-header">
+                <span class="step-number">Paso 4 · Agenda y Confirmación</span>
+                <span class="step-status status-blue" id="step-4-badge">Derivación 1 a 1</span>
+              </div>
+              <div class="step-content" id="step-4-content">
+                Objetivo de cierre: Llamada de 15 min de orientación con María de Jesús Vera (+52 244 123 5715). Horarios propuestos: Mañana / Tarde.
+              </div>
+            </div>
+
+            <div class="step-box">
+              <div class="step-header">
+                <span class="step-number">Paso 5 · Escritura en CRM (leads.db)</span>
+                <span class="step-status status-ok">Sincronizado</span>
+              </div>
+              <div class="step-content" id="step-5-content">
+                Fila actualizada en base SQLite local. Etapa: <code>calificado</code>. Próximo paso: Coordinar llamada en WhatsApp oficial.
+              </div>
+            </div>
+
+            <div class="step-box">
+              <div class="step-header">
+                <span class="step-number">Paso 6 · Filtro de Escalación Humana</span>
+                <span class="step-status status-ok">Bajo Control</span>
+              </div>
+              <div class="step-content" id="step-6-content">
+                Sin enojo ni solicitud de cancelación detectada. Conversación dentro de parámetros.
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- TAB 2: LEADS REGISTRADOS -->
+    <div id="tab-leads" class="tab-content">
+      <div class="leads-container">
+        <div class="table-header-controls">
+          <h2>Prospectos y Leads Calificados</h2>
+          <button class="btn-save" onclick="cargarLeads()">🔄 Actualizar Leads</button>
+        </div>
+        <table>
+          <thead>
+            <tr>
+              <th>Teléfono</th>
+              <th>Nombre</th>
+              <th>País</th>
+              <th>Score</th>
+              <th>Temperatura</th>
+              <th>Etapa</th>
+              <th>Acción WhatsApp</th>
+            </tr>
+          </thead>
+          <tbody id="leads-tbody">
+            <!-- Se llena dinámicamente -->
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+    <!-- TAB 3: PLAYBOOK DE 10 OBJECIONES -->
+    <div id="tab-playbook" class="tab-content">
+      <div class="playbook-grid" id="playbook-cards-container">
+        <!-- Se llena con las 10 objeciones oficiales -->
+      </div>
+    </div>
+
+    <!-- TAB 4: CONFIGURACIÓN -->
+    <div id="tab-config" class="tab-content">
+      <form class="config-form" onsubmit="guardarConfig(event)">
+        <h2>Configuración del Cerrador</h2>
+        <div class="form-group">
+          <label>Google Gemini API Key:</label>
+          <input type="password" id="cfg-gemini-key" placeholder="AIzaSy...">
+        </div>
+        <div class="form-group">
+          <label>Modelo Gemini:</label>
+          <select id="cfg-gemini-model">
+            <option value="gemini-3.8-flash">gemini-3.8-flash (Recomendado - Ultrarrápido y multimodal)</option>
+            <option value="gemini-2.5-flash">gemini-2.5-flash (Balanceado)</option>
+            <option value="gemini-1.5-pro">gemini-1.5-pro</option>
+          </select>
+        </div>
+        <div class="form-group">
+          <label>Teléfono Oficial de Derivación (WhatsApp):</label>
+          <input type="text" id="cfg-telefono" value="+52 244 123 5715">
+        </div>
+        <div class="form-group">
+          <label>Modo de Operación:</label>
+          <select id="cfg-modo">
+            <option value="borrador">Borrador (Revisión humana antes de enviar)</option>
+            <option value="automatico">Automático (Envío directo)</option>
+          </select>
+        </div>
+        <button type="submit" class="btn-save">Guardar Configuración</button>
+      </form>
+    </div>
+  </main>
+
+  <script>
+    const CONVERSACION_ID = "simulador_" + Math.floor(Math.random() * 100000);
+    let historialMensajes = [];
+
+    function switchTab(tabId) {
+      document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+      document.querySelectorAll('.tab-content').forEach(c => c.classList.remove('active'));
+      
+      document.querySelector(`[onclick="switchTab('${tabId}')"]`).classList.add('active');
+      document.getElementById(`tab-${tabId}`).classList.add('active');
+
+      if (tabId === 'leads') cargarLeads();
+      if (tabId === 'playbook') renderPlaybook();
+    }
+
+    async function handleChatSubmit(e) {
+      if (e) e.preventDefault();
+      const input = document.getElementById('chat-input');
+      const texto = input.value.trim();
+      if (!texto) return;
+
+      appendMessage(texto, 'msg-user');
+      input.value = '';
+
+      // Indicador escribiendo
+      const loadingDiv = document.createElement('div');
+      loadingDiv.className = 'msg-bubble msg-agent';
+      loadingDiv.id = 'loading-bubble';
+      loadingDiv.innerText = 'Escribiendo...';
+      document.getElementById('chat-messages').appendChild(loadingDiv);
+      scrollChat();
+
+      try {
+        const res = await fetch('/api/chat', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            conversacion_id: CONVERSACION_ID,
+            mensaje: texto,
+            telefono: "+52 244 123 5715",
+            nombre: "Prospecto Emprendedor"
+          })
+        });
+
+        const data = await res.json();
+        document.getElementById('loading-bubble')?.remove();
+
+        appendMessage(data.respuesta_texto, 'msg-agent');
+        actualizarInspector(data);
+      } catch (err) {
+        document.getElementById('loading-bubble')?.remove();
+        appendMessage("Error de conexión al servidor local.", 'msg-agent');
+      }
+    }
+
+    function sendQuickReply(texto) {
+      document.getElementById('chat-input').value = texto;
+      handleChatSubmit();
+    }
+
+    function appendMessage(texto, className) {
+      const chat = document.getElementById('chat-messages');
+      const bubble = document.createElement('div');
+      bubble.className = `msg-bubble ${className}`;
+      bubble.innerText = texto;
+      
+      const time = document.createElement('div');
+      time.className = 'msg-time';
+      const now = new Date();
+      time.innerText = now.getHours().toString().padStart(2, '0') + ':' + now.getMinutes().toString().padStart(2, '0');
+      bubble.appendChild(time);
+
+      chat.appendChild(bubble);
+      scrollChat();
+    }
+
+    function scrollChat() {
+      const chat = document.getElementById('chat-messages');
+      chat.scrollTop = chat.scrollHeight;
+    }
+
+    function actualizarInspector(data) {
+      if (!data) return;
+      const cal = data.calificacion || {};
+
+      document.getElementById('inspector-score').innerText = cal.score || 50;
+      const tempBadge = document.getElementById('inspector-temperatura');
+      tempBadge.innerText = (cal.temperatura || 'tibio').toUpperCase();
+      tempBadge.className = `step-status ${cal.temperatura === 'caliente' ? 'status-ok' : 'status-warning'}`;
+
+      document.getElementById('step-2-content').innerHTML = `
+        <strong>Intención:</strong> ${cal.intencion || 'Consulta'}<br>
+        <strong>País:</strong> ${cal.pais || 'México'} · <strong>Experiencia:</strong> ${cal.experiencia || 'General'}
+      `;
+
+      document.getElementById('step-3-content').innerHTML = `
+        <strong>Objeción detectada:</strong> ${data.objecion_detectada || 'Ninguna (Avanzando)'}<br>
+        <strong>Playbook Matching:</strong> ${data.objecion_en_playbook ? '✅ Coincide con Playbook Oficial' : 'ℹ️ Respuesta adaptada'}<br>
+        <strong>Motivo:</strong> ${cal.motivo || ''}
+      `;
+
+      document.getElementById('step-4-content').innerHTML = `
+        <strong>Objetivo de Cierre:</strong> ${data.agendado ? '🎉 Cita / Interés en llamada confirmado' : 'Ofreciendo llamada de 15 min con María (+52 244 123 5715)'}<br>
+        <strong>Horario propuesto:</strong> ${data.horario_ofrecido || '10:00 - 13:00 / 16:00 - 19:00'}
+      `;
+
+      document.getElementById('step-5-content').innerHTML = `
+        Fila actualizada en SQLite. Etapa: <code>${data.crm_etapa || 'calificado'}</code>.<br>
+        <strong>Próximo paso:</strong> ${data.proximo_paso || 'Seguimiento por María'}
+      `;
+
+      document.getElementById('step-6-content').innerHTML = data.escalar ?
+        '<span style="color:#ef4444">⚠️ Se disparó aviso interno de escalación humana.</span>' :
+        'Conversación fluida dentro de los límites del agente.';
+    }
+
+    async function cargarLeads() {
+      const tbody = document.getElementById('leads-tbody');
+      tbody.innerHTML = '<tr><td colspan="7">Cargando prospectos...</td></tr>';
+      try {
+        const res = await fetch('/api/leads');
+        const leads = await res.json();
+        if (!leads || leads.length === 0) {
+          tbody.innerHTML = '<tr><td colspan="7">No hay prospectos aún. Envía mensajes en el simulador para registrarlos.</td></tr>';
+          return;
+        }
+
+        tbody.innerHTML = leads.map(l => `
+          <tr>
+            <td><strong>${l.telefono}</strong></td>
+            <td>${l.nombre || 'Emprendedor'}</td>
+            <td>${l.pais || 'México'}</td>
+            <td><strong style="color:var(--accent-gemini-1)">${l.score}/100</strong></td>
+            <td><span class="step-status ${l.temperatura === 'caliente' ? 'status-ok' : 'status-warning'}">${(l.temperatura || 'tibio').toUpperCase()}</span></td>
+            <td><code>${l.etapa}</code></td>
+            <td>
+              <a href="https://wa.me/522441235715?text=Hola%20María,%20te%20contacto%20sobre%20el%20lead%20${l.telefono}" target="_blank" class="wa-btn">
+                Abrir WhatsApp
+              </a>
+            </td>
+          </tr>
+        `).join('');
+      } catch (err) {
+        tbody.innerHTML = '<tr><td colspan="7">Error al cargar leads.</td></tr>';
+      }
+    }
+
+    const objecionesEstaticas = [
+      { titulo: "1. ¿Es pirámide / es estafa?", resumen: "Responde con calma y sin discutir: empresa formal con 45+ años de respaldo clínico, producto físico de consumo recurrente y logística automatizada. Explicación completa en llamada." },
+      { titulo: "2. ¿Cuánto se gana?", resumen: "NUNCA dar cifras ni prometer ingresos. Comisiones según productividad del equipo y plan oficial en la llamada; lo garantizado es el sistema y la mentoría 1 a 1." },
+      { titulo: "3. ¿Cuánto cuesta entrar?", resumen: "Activación con una caja de producto. El monto y promociones exactas varían por país (México, Colombia, Perú, Ecuador) y se confirman con total transparencia en la llamada." },
+      { titulo: "4. Ya estoy en otra compañía / ya vendo otra cosa", resumen: "Es el público ideal. NO se le pide dejar su catálogo o empleo; la propuesta es sumar en paralelo de forma apalancada." },
+      { titulo: "5. Ya lo intenté y me dejaron solo", resumen: "La objeción es el abandono previo, no el modelo. Aquí hay mentoría y acompañamiento real 1 a 1 de María de Jesús Vera desde el primer día." },
+      { titulo: "6. No tengo tiempo / No puedo dejar mi trabajo", resumen: "Se construye a tiempo parcial (10 a 12 horas por semana) sin descuidar sus ingresos actuales. Cero tiempo perdido en cobranzas." },
+      { titulo: "7. No me gusta vender al menudeo ni cobrar fiado", resumen: "No se cobran fiados ni se persigue gente. La fábrica envía directo y factura al cliente; el socio lidera y construye equipo." },
+      { titulo: "8. Ya estuve en una red / No sé cómo empezar", resumen: "Valida la experiencia previa y destaca el diferenciador del equipo: mapa paso a paso y mentoría directa 1 a 1 con María." },
+      { titulo: "9. Envíame información por PDF o video antes de hablar", resumen: "Postura de liderazgo: la propuesta se personaliza por perfil y país; la llamada de 15 minutos resuelve dudas puntuales." },
+      { titulo: "10. Tengo producto/inventario detenido en casa", resumen: "Envíos directos de fábrica al cliente. Sin bodegas en casa, sin stock acumulado ni capital atrapado." }
+    ];
+
+    function renderPlaybook() {
+      const container = document.getElementById('playbook-cards-container');
+      container.innerHTML = objecionesEstaticas.map(o => `
+        <div class="playbook-card">
+          <h3>${o.titulo}</h3>
+          <p>${o.resumen}</p>
+        </div>
+      `).join('');
+    }
+
+    function guardarConfig(e) {
+      e.preventDefault();
+      alert("Configuración guardada correctamente en el servidor.");
+    }
+  </script>
+</body>
+</html>

@@ -1,0 +1,11 @@
+# Modos de operación y límites del cerrador
+cerrador:
+  modo_por_defecto: "borrador" # "borrador" o "automatico"
+  requiere_confirmacion_envio: true
+  modelo_ia: "gemini-3.8-flash"
+  proveedor_ia: "google-gemini"
+  proveedor_mensajeria: "demo" # "demo", "meta", "zernio"
+  umbrales:
+    caliente: 75
+    tibio: 45
+    frio: 0

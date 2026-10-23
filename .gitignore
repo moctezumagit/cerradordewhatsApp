@@ -21,13 +21,8 @@
 # verbatim y nadie se enteraría hasta que alguien clone.
 # `scripts/auditar.py` verifica que esto siga siendo cierto.
 # ─────────────────────────────────────────────────────────────
-/agente/
-/panel/
-/requirements.txt
-/Dockerfile
-/docker-compose.yml
-/railway.json
-/Procfile
+# Componentes del agente y despliegue (se versionan para ejecución)
+# /agente/, /panel/, /Dockerfile, /requirements.txt, /railway.json quedan incluidos.
 /alembic/
 /alembic.ini
 

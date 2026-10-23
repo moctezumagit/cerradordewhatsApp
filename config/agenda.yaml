@@ -1,0 +1,13 @@
+# Configuración de agenda y derivación oficial
+agenda:
+  tipo: "Llamada 1 a 1 de orientación gratuita (15 minutos)"
+  modalidad: "Videollamada o llamada telefónica directa"
+  anfitriona: "María de Jesús Vera"
+  telefono_whatsapp: "+52 244 123 5715"
+  link_whatsapp: "https://wa.me/522441235715?text=Hola%20María,%20me%20gustaría%20agendar%20mi%20llamada%20de%20orientación%20de%2015%20minutos%20para%20la%20red%20de%20socios"
+  franjas_recomendadas:
+    - "Mañana (10:00 - 13:00)"
+    - "Tarde (16:00 - 19:00)"
+  regla_seguimiento:
+    - "Si vio los videos o información y no agendó: un solo seguimiento amable."
+    - "Si dice que no le interesa: despedida cordial y respetuosa con agradecimiento."

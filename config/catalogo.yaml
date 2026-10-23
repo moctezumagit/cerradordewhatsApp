@@ -1,0 +1,19 @@
+# Catálogo y oferta de afiliación
+negocio:
+  nombre: "Programa de Red de Asociados y Consultores Independientes"
+  industria: "Bienestar Digital y Biotecnología Celular"
+  respaldo: "Más de 45 años de ciencia, investigación médica y patentes internacionales"
+  mentora: "María de Jesús Vera"
+  whatsapp_oficial: "+52 244 123 5715"
+  enlace_directo: "https://wa.me/522441235715"
+  países_disponibles:
+    - México
+    - Colombia
+    - Perú
+    - Ecuador
+  infraestructura: "Logística y envíos 100% automatizados directos de fábrica al cliente final"
+  activacion: "Paquete de producto inicial (caja de producto). Monto y promociones exactas confirmadas en la llamada oficial con María."
+  reglas_estrictas:
+    - "NO inventar precios, ni cifras de ingresos o promesas de ganancias."
+    - "NO venta directa en frío: la oferta es afiliarse como socio/a y crear equipo red en paralelo."
+    - "El objetivo primordial es derivar al WhatsApp oficial (+52 244 123 5715) o agendar llamada 1 a 1 de 15 min."
